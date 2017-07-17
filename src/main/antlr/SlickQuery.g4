@@ -1,5 +1,9 @@
 grammar SlickQuery;
 
+@header {
+package com.slickqa.query.generated;
+}
+
 query: and | or | not | propertyComparison;
 
 and: 'and(' query ',' query (',' query)* ')';
@@ -8,7 +12,7 @@ not: 'not(' query ')';
 
 propertyComparison: equalsComparison | notEqualsComparison | lessThanComparison | lessThanOrEqualToComparison |
                     greaterThanComparison | greaterThanOrEqualToComparison | existsExpression | stringComparison |
-                    dateLaterThanComparison | dateEarlierThanComparison;
+                    dateLaterThanComparison | dateEarlierThanComparison | listComparison;
 
 equalsComparison: equalsStringComparison | equalsFloatComparison | equalsIntegerComparison | equalsBooleanComparison;
 equalsFloatComparison: 'eq' FLOATSIGNATURE;
@@ -57,10 +61,17 @@ ignoreCaseEndsWithStringComparison: 'iendswith' QUOTEDSTRINGSIGNATURE;
 dateLaterThanComparison: 'laterthan' INTEGERSIGNATURE;
 dateEarlierThanComparison: 'earlierthan' INTEGERSIGNATURE;
 
+listComparison: inComparison | ninComparison | allComparison;
+inComparison: 'in' LISTSIGNATURE;
+ninComparison: 'nin' LISTSIGNATURE;
+allComparison: 'all' LISTSIGNATURE;
+
 QUOTEDSTRINGSIGNATURE: '(' PROPERTYNAME COMMA QUOTEDSTRING ')';
 INTEGERSIGNATURE: '(' PROPERTYNAME COMMA INTEGER ')';
 FLOATSIGNATURE: '(' PROPERTYNAME COMMA FLOAT ')';
 BOOLEANSIGNATURE: '(' PROPERTYNAME COMMA BOOLEAN ')';
+LISTSIGNATURE: '(' PROPERTYNAME COMMA LISTVALUE ')';
+
 fragment COMMA: ',' | ', ';
 
 PROPERTYNAME: LETTER ((LETTER | DIGIT)* | (LETTER | DIGIT)* '.' LETTER (LETTER | DIGIT)*)*;
@@ -72,6 +83,8 @@ INTEGER: ('0' | '1'..'9' DIGIT*);
 BOOLEAN: 'true' | 'True' | 'false' | 'False';
 
 QUOTEDSTRING: '"' ( '\\"' | ~('\n'|'\r') )*? '"';
+
+LISTVALUE: '(' (QUOTEDSTRING COMMA QUOTEDSTRING (COMMA QUOTEDSTRING)*) ')';
 
 fragment LETTER: 'a' .. 'z' | 'A' .. 'Z' | '_';
 fragment DIGIT: '0' .. '9';
